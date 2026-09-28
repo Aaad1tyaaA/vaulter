@@ -33,7 +33,7 @@ and never sends a key over the network.
 ### 1. Download
 
 1. Open the **[latest release page](https://github.com/Aaad1tyaaA/vaulter/releases/latest)**.
-2. Scroll down to **Assets** and click **`Vaulter-Setup-2.0.0.exe`** (the version number may be newer).
+2. Scroll down to **Assets** and click **`Vaulter-Setup-2.0.1.exe`** (the version number may be newer).
    Also download **`SHA256SUMS.txt`** if you want to do the check in step 2.
 3. Your browser may warn that the file *"isn't commonly downloaded"*, because it's new and unsigned:
    - **Edge:** hover the download → click **⋯** → **Keep** → **Show more** → **Keep anyway**.
@@ -46,14 +46,14 @@ The installer isn't code-signed yet, so this is how you know the file is exactly
 1. Open your **Downloads** folder, click the address bar, type `powershell` and press **Enter**.
 2. Paste this and press **Enter**:
    ```powershell
-   (Get-FileHash '.\Vaulter-Setup-2.0.0.exe' -Algorithm SHA256).Hash
+   (Get-FileHash '.\Vaulter-Setup-2.0.1.exe' -Algorithm SHA256).Hash
    ```
 3. Compare the long code it prints with the line in `SHA256SUMS.txt` (also shown in the release notes).
    Capital vs small letters don't matter. **If they don't match, delete the file and don't run it.**
 
 ### 3. Install
 
-1. Double-click **`Vaulter-Setup-2.0.0.exe`**.
+1. Double-click **`Vaulter-Setup-2.0.1.exe`**.
 2. Windows shows a blue box: *"Windows protected your PC"*. This appears for any app that isn't code-signed yet.
    Click **More info** (the small link under the text), then **Run anyway**.
 3. Click **Yes** on the *"Do you want to allow this app to make changes?"* prompt. Vaulter installs into
@@ -65,7 +65,7 @@ Vaulter is now on your **desktop** and in the **Start menu**.
 ### 4. First launch
 
 1. Open **Vaulter**.
-2. Create your **master password**. Vaulter only accepts strong ones: 16+ characters mixing upper and lower
+2. Create your **master password**. Vaulter only accepts strong ones: 8+ characters mixing upper and lower
    case, numbers and symbols. Click **Generate strong password** to have one made for you, and save it in your
    password manager.
 3. Vaulter shows your **recovery code**. **Write it down or save it somewhere off this PC.** It's the only

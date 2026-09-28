@@ -25,11 +25,11 @@ function hasRun(p) { // 4+ steps of a sequence or keyboard row, either direction
 function pwChecks(p) {
   const lower = p.toLowerCase();
   return [
-    ['At least 16 characters', p.length >= 16],
+    ['At least 8 characters', p.length >= 8],
     ['Upper and lowercase letters', /[a-z]/.test(p) && /[A-Z]/.test(p)],
     ['A number', /\d/.test(p)],
     ['A symbol like ! @ # $ % &', /[^A-Za-z0-9\s]/.test(p)],
-    ['12+ different characters', new Set(p).size >= 12],
+    ['6+ different characters', new Set(p).size >= 6],
     ['No character 3× in a row', !!p && !/(.)\1\1/.test(p)],
     ['No runs like abcd, 1234, qwer', !!p && !hasRun(p)],
     ['No common words (password, admin…)', !!p && !COMMON.some(w => lower.includes(w))],
