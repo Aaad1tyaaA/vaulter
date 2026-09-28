@@ -28,7 +28,7 @@ and never sends a key over the network.
 
 ## Install
 
-**Needs:** Windows 10 or 11, 64-bit. About 400 MB of disk space. No account, no internet needed after install.
+**Needs:** Windows 10 or 11, 64-bit. About 500 MB of disk space. No account, no internet needed after install.
 
 ### 1. Download
 
