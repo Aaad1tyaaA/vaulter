@@ -1,0 +1,11 @@
+/* Tailwind without preflight: the vault UI ships its own base styles. */
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+
+/* video orb: a slow float and a breathing core (transform/opacity only, so they stay on the compositor) */
+.orb-bob { animation: orb-bob 6s ease-in-out infinite; }
+@keyframes orb-bob { 50% { transform: translate3d(0, -1.6%, 0); } }
+.orb-core { animation: orb-breathe 3.2s ease-in-out infinite; }
+@keyframes orb-breathe { 50% { scale: 1.12; } } /* `scale`, not transform: Tailwind centres it with `translate` */
+body.calm .orb-bob, body.calm .orb-core { animation: none; }

@@ -1,0 +1,17 @@
+# dependencies & build output (the installer ships via GitHub Releases, never the repo)
+node_modules/
+dist/
+release/
+public/vendor/
+
+# logs / OS noise
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
+
+# never commit a real vault, backups, or env files
+vault.json
+vaulter-*.json
+*.env
+.env*

@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Vaulter logo options</title>
+<style>
+@font-face { font-family: 'Syncopate'; font-weight: 700; src: url(../public/fonts/syncopate-700.woff2) format('woff2'); }
+@font-face { font-family: 'Geist'; font-weight: 300 700; src: url(../public/fonts/gyByhwUxId8gMEwcGFU.woff2) format('woff2'); }
+body { margin: 0; background: #000; color: #eee; font: 14px/1.5 Geist, system-ui, sans-serif; padding: 40px; }
+h1 { font: 700 18px Syncopate; letter-spacing: .3em; margin: 0 0 6px; }
+p { color: #888; margin: 0 0 30px; }
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; max-width: 1100px; }
+.opt { border: 1px solid #222; border-radius: 20px; overflow: hidden; }
+.pair { display: grid; grid-template-columns: 1fr 1fr; }
+.pair > div { display: grid; place-items: center; gap: 14px; padding: 34px 10px; }
+.dark { background: #000; color: #f2f2f2; } .light { background: #f4f3ef; color: #0d0d0d; }
+.pair svg { width: 72px; height: 72px; }
+.small { display: flex; gap: 10px; align-items: center; }
+.small svg { width: 20px; height: 20px; }
+.word { font: 700 11px Syncopate; letter-spacing: .32em; }
+.lab { padding: 12px 16px; border-top: 1px solid #222; display: flex; justify-content: space-between; }
+.lab b { font-weight: 600; } .lab span { color: #777; }
+</style></head><body>
+<h1>VAULTER</h1><p>Logo options. Each shown on dark and light, big and at favicon size. Tell me the letter.</p>
+<div class="grid" id="g"></div>
+<script>
+// every mark uses currentColor, so it follows the theme automatically
+const marks = {
+  A: ['Orbit V', 'A V cut from a single orbit ring.', '<circle cx="32" cy="32" r="26" fill="none" stroke="currentColor" stroke-width="2.5" opacity=".35"/><path d="M19 20 L32 45 L45 20" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="52" cy="16" r="3.5" fill="currentColor"/>'],
+  B: ['Keyhole orb', 'A sphere with a negative-space keyhole.', '<circle cx="32" cy="32" r="26" fill="currentColor"/><circle cx="32" cy="27" r="6.5" fill="var(--bg)"/><path d="M29 31 h6 l2.5 14 h-11 z" fill="var(--bg)"/>'],
+  C: ['Split vault', 'Two half-circles, offset like a door opening.', '<path d="M30 6 A26 26 0 0 0 30 58 Z" fill="currentColor"/><path d="M34 10 A22 22 0 0 1 34 54" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>'],
+  D: ['Monoline V', 'Ultra-thin V inside a soft squircle.', '<rect x="6" y="6" width="52" height="52" rx="17" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M21 22 L32 43 L43 22" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>'],
+  E: ['Dial', 'A vault combination dial, reduced to one tick.', '<circle cx="32" cy="32" r="25" fill="none" stroke="currentColor" stroke-width="3"/><circle cx="32" cy="32" r="14" fill="none" stroke="currentColor" stroke-width="3" opacity=".45"/><path d="M32 7 v10" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/><circle cx="32" cy="32" r="3.5" fill="currentColor"/>'],
+  F: ['Glass drop', 'The orb as a single highlight — pure and quiet.', '<circle cx="32" cy="32" r="26" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M18 28 A15 15 0 0 1 30 16" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><circle cx="41" cy="41" r="4" fill="currentColor" opacity=".5"/>'],
+};
+g.innerHTML = Object.entries(marks).map(([k, [name, desc, svg]]) => {
+  const icon = bg => `<svg viewBox="0 0 64 64" style="--bg:${bg}">${svg}</svg>`;
+  const side = (cls, bg) => `<div class="${cls}">${icon(bg)}<div class="small">${icon(bg)}<span class="word">Vaulter</span></div></div>`;
+  return `<div class="opt"><div class="pair">${side('dark', '#000')}${side('light', '#f4f3ef')}</div><div class="lab"><b>${k} · ${name}</b><span>${desc}</span></div></div>`;
+}).join('');
+</script>
+</body></html>
+

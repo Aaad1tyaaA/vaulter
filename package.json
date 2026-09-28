@@ -1,0 +1,78 @@
+{
+  "name": "vaulter",
+  "productName": "Vaulter",
+  "version": "2.0.0",
+  "description": "Encrypted offline API key vault",
+  "author": "Vaulter",
+  "private": true,
+  "main": "electron/main.cjs",
+  "scripts": {
+    "dev": "vite",
+    "build": "node scripts/vendor.cjs && tsc --noEmit && vite build",
+    "app": "vite build && electron .",
+    "dist": "npm run build && electron-builder --win nsis && node scripts/checksums.cjs",
+    "test": "node scripts/test-providers.cjs && node scripts/test-crypto.cjs && electron scripts/test-clipboard.cjs",
+    "verify": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify-hardening.ps1 && powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify-capture.ps1 && powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify-no-remote-debug.ps1",
+    "render:orb": "electron scripts/render-orb.cjs dark && electron scripts/render-orb.cjs light && electron scripts/render-orb.cjs dark burst && electron scripts/render-orb.cjs light burst"
+  },
+  "build": {
+    "appId": "app.vaulter.desktop",
+    "productName": "Vaulter",
+    "files": [
+      "dist/**",
+      "electron/**"
+    ],
+    "directories": {
+      "output": "release"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "build/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Vaulter",
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico",
+      "perMachine": true
+    },
+    "electronFuses": {
+      "runAsNode": false,
+      "enableCookieEncryption": true,
+      "enableNodeOptionsEnvironmentVariable": false,
+      "enableNodeCliInspectArguments": false,
+      "enableEmbeddedAsarIntegrityValidation": true,
+      "onlyLoadAppFromAsar": true
+    }
+  },
+  "dependencies": {
+    "@react-three/drei": "^10.7.9",
+    "@react-three/fiber": "^9.8.1",
+    "@react-three/postprocessing": "^3.1.3",
+    "clsx": "^2.1.1",
+    "hash-wasm": "^4.12.0",
+    "postprocessing": "^6.39.5",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "tailwind-merge": "^3.7.0",
+    "three": "^0.186.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/node": "^26.6.3",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@types/three": "^0.186.0",
+    "@vitejs/plugin-react": "^6.1.1",
+    "electron": "^44.4.5",
+    "electron-builder": "^26.15.3",
+    "ffmpeg-static": "^5.3.0",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.1"
+  },
+  "license": "MIT"
+}
