@@ -37,7 +37,8 @@
       "shortcutName": "Vaulter",
       "installerIcon": "build/icon.ico",
       "uninstallerIcon": "build/icon.ico",
-      "perMachine": true
+      "perMachine": true,
+      "artifactName": "Vaulter-Setup-${version}.${ext}"
     },
     "electronFuses": {
       "runAsNode": false,

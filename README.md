@@ -23,11 +23,11 @@ and never sends a key over the network.
 
 ## Install
 
-1. Download **`Vaulter Setup x.y.z.exe`** and **`SHA256SUMS.txt`** from the [Releases](../../releases) page.
+1. Download **`Vaulter-Setup-x.y.z.exe`** and **`SHA256SUMS.txt`** from the [Releases](../../releases) page.
 2. **Check the download is genuine** (the installer isn't code-signed yet, so this is how you know it's mine).
    In PowerShell, in your Downloads folder:
    ```powershell
-   (Get-FileHash '.\Vaulter Setup 2.0.0.exe' -Algorithm SHA256).Hash
+   (Get-FileHash '.\Vaulter-Setup-2.0.0.exe' -Algorithm SHA256).Hash
    ```
    The result must match the line for that file in `SHA256SUMS.txt` (upper/lower case doesn't matter).
    If it doesn't match, delete the file and don't run it.
