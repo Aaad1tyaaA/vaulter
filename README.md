@@ -3,6 +3,11 @@
 <h1 align="center">Vaulter</h1>
 <p align="center">An encrypted, offline vault for your API keys. Windows desktop app.</p>
 
+<p align="center">
+  <a href="https://github.com/Aaad1tyaaA/vaulter/releases/latest"><b>⬇ Download the latest version</b></a>
+  &nbsp;·&nbsp; Windows 10 / 11 (64-bit) &nbsp;·&nbsp; <a href="#install">Step-by-step install guide</a>
+</p>
+
 ---
 
 Vaulter keeps every API key you own in one place, encrypted on your own machine. It never syncs anywhere
@@ -23,19 +28,74 @@ and never sends a key over the network.
 
 ## Install
 
-1. Download **`Vaulter-Setup-x.y.z.exe`** and **`SHA256SUMS.txt`** from the [Releases](../../releases) page.
-2. **Check the download is genuine** (the installer isn't code-signed yet, so this is how you know it's mine).
-   In PowerShell, in your Downloads folder:
+**Needs:** Windows 10 or 11, 64-bit. About 400 MB of disk space. No account, no internet needed after install.
+
+### 1. Download
+
+1. Open the **[latest release page](https://github.com/Aaad1tyaaA/vaulter/releases/latest)**.
+2. Scroll down to **Assets** and click **`Vaulter-Setup-2.0.0.exe`** (the version number may be newer).
+   Also download **`SHA256SUMS.txt`** if you want to do the check in step 2.
+3. Your browser may warn that the file *"isn't commonly downloaded"*, because it's new and unsigned:
+   - **Edge:** hover the download → click **⋯** → **Keep** → **Show more** → **Keep anyway**.
+   - **Chrome:** click **Keep** (or open the downloads list with Ctrl+J → **Keep dangerous file**).
+
+### 2. Check the download is genuine (optional, recommended)
+
+The installer isn't code-signed yet, so this is how you know the file is exactly the one published here.
+
+1. Open your **Downloads** folder, click the address bar, type `powershell` and press **Enter**.
+2. Paste this and press **Enter**:
    ```powershell
    (Get-FileHash '.\Vaulter-Setup-2.0.0.exe' -Algorithm SHA256).Hash
    ```
-   The result must match the line for that file in `SHA256SUMS.txt` (upper/lower case doesn't matter).
-   If it doesn't match, delete the file and don't run it.
-3. Run it. Windows may say *"Windows protected your PC"* because the installer isn't code-signed yet.
-   Click **More info → Run anyway**, then **Yes** on the admin prompt: Vaulter installs into Program Files,
-   where its files can't be modified without admin rights.
-4. Create a master password (Vaulter only accepts strong ones; **Generate strong password** makes one for you)
-   and **save the recovery code it shows you**. It's the only way back in if you forget the password.
+3. Compare the long code it prints with the line in `SHA256SUMS.txt` (also shown in the release notes).
+   Capital vs small letters don't matter. **If they don't match, delete the file and don't run it.**
+
+### 3. Install
+
+1. Double-click **`Vaulter-Setup-2.0.0.exe`**.
+2. Windows shows a blue box: *"Windows protected your PC"*. This appears for any app that isn't code-signed yet.
+   Click **More info** (the small link under the text), then **Run anyway**.
+3. Click **Yes** on the *"Do you want to allow this app to make changes?"* prompt. Vaulter installs into
+   Program Files, where its files can't be tampered with without admin rights.
+4. In the installer, keep the suggested folder (or pick another), click **Install**, then **Finish**.
+
+Vaulter is now on your **desktop** and in the **Start menu**.
+
+### 4. First launch
+
+1. Open **Vaulter**.
+2. Create your **master password**. Vaulter only accepts strong ones: 16+ characters mixing upper and lower
+   case, numbers and symbols. Click **Generate strong password** to have one made for you, and save it in your
+   password manager.
+3. Vaulter shows your **recovery code**. **Write it down or save it somewhere off this PC.** It's the only
+   way back in if you forget the password. Tick *"I've saved my recovery code"* and click **Enter the vault**.
+4. Recommended: open **Settings (⚙) → Backups → Automatic backups → Change folder** and pick a OneDrive,
+   Google Drive or Dropbox folder, so your encrypted backups live off your PC too.
+
+Then paste your first API key with **New key** (or just press **Ctrl+V** anywhere in the vault).
+
+### Updating to a new version
+
+Download the new `Vaulter-Setup-x.y.z.exe` from the [latest release](https://github.com/Aaad1tyaaA/vaulter/releases/latest)
+and run it the same way. It installs over the old version. **Your keys, folders and backups are kept.**
+
+### Uninstalling
+
+**Windows Settings → Apps → Installed apps → Vaulter → ⋯ → Uninstall.**
+Your encrypted vault (`%APPDATA%\Vaulter`) and backups (`Documents\Vaulter Backups`) are **not** deleted, so
+reinstalling picks up where you left off. Delete those two folders too if you want everything gone.
+
+### Troubleshooting
+
+| Problem | Fix |
+|---|---|
+| No **Run anyway** button on the blue Windows box | Click the small **More info** link first. |
+| Browser deleted or blocked the download | Use the browser's downloads list (Ctrl+J) and choose **Keep / Keep anyway**. |
+| Antivirus quarantined the installer | It's flagged only for being new and unsigned. Check the SHA-256 (step 2), then restore it from quarantine. |
+| "Vaulter found your encrypted backups" on first launch | You've used Vaulter on this PC before. Click **Restore newest backup** and unlock it with your old password or recovery code. |
+| Forgot the master password | On the unlock screen click **Forgot password?** and enter your recovery code. |
+| Vault locks while I'm using it | That's the session timer. Change it in **Settings → Security → Lock the vault this long after unlocking**. |
 
 ## Where your data lives
 
@@ -49,9 +109,9 @@ Every file is encrypted. It opens only with your master password or your recover
 
 ### Backing up
 
-- **Automatic (recommended):** Settings → *Automatic backups* → **Change folder** → pick a OneDrive / Google Drive /
-  Dropbox folder. Every change is then backed up off your machine, still encrypted.
-- **Manual:** Settings → **Export encrypted backup** → save the `.json` to a USB stick or cloud drive.
+- **Automatic (recommended):** Settings → **Backups** → *Automatic backups* → **Change folder** → pick a OneDrive /
+  Google Drive / Dropbox folder. Every change is then backed up off your machine, still encrypted.
+- **Manual:** Settings → **Backups** → **Export encrypted backup** → save the `.json` to a USB stick or cloud drive.
 - **Recovery code:** keep it on paper or in a password manager, not only on this PC.
 
 ### Restoring (new PC, reinstall, or after deleting the app)
