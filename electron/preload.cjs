@@ -9,7 +9,7 @@ const sync = (ch, ...a) => {
 
 contextBridge.exposeInMainWorld('kvFs', {
   read: () => sync('kv:read'),
-  write: text => sync('kv:write', text),
+  write: text => ipcRenderer.invoke('kv:write', text), // async: saving (and backing up to a cloud folder) never freezes the window
   wipe: opts => sync('kv:wipe', { backups: !!opts?.backups }),
   purgeBackups: () => sync('kv:purgeBackups'),
   backupNow: () => sync('kv:backupNow'),

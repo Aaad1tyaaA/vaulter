@@ -68,4 +68,6 @@ async function clearOnQuit() {
   clipProc?.kill()
 }
 
-module.exports = { copySecret, clearIfOurs, clearOnQuit }
+const warmUp = () => { clipHelper() } // PowerShell + WinForms take ~1s to start; pay it once, at launch
+
+module.exports = { copySecret, clearIfOurs, clearOnQuit, warmUp }

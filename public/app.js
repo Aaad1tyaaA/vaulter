@@ -306,7 +306,7 @@ function lockStep(step, extra) {
         const c = await openWithCode(extra, secret);
         r = { session: { dek: c.dek, pw: extra.pw, rc: extra.rc }, data: c.data };
       }
-      writeVault(extra); session = r.session; data = normalize(r.data);
+      await writeVault(extra); session = r.session; data = normalize(r.data);
       if (!isModernPw(session.pw) && session.pw === extra.pw) { // opened with the password (not the code): upgrade it
         try { await unwrap(extra.pw, secret); session = { ...session, pw: await wrap(session.dek, secret, PW_KDF) }; await persist(); } catch {}
       }
@@ -505,8 +505,9 @@ const entry = id => data.entries.find(e => e.id === id);
 let clipTimer, revealTimers = {};
 async function copyText(text, from, what = 'Copied') {
   const sec = data.settings.clip;
-  try { if (fsv) await fsv.copy(text, sec); else await navigator.clipboard.writeText(text); }
-  catch { toast('Clipboard blocked. Click the window first.', 'bad'); return false; }
+  const done = (fsv ? fsv.copy(text, sec) : navigator.clipboard.writeText(text)).then(() => true, () => false);
+  if (!fsv && !await done) { toast('Clipboard blocked. Click the window first.', 'bad'); return false; } // the browser can refuse; the desktop helper falls back itself
+  done.then(ok => ok || toast('Could not copy. Try again.', 'bad'));
   const r = from?.getBoundingClientRect();
   if (r) { Orb.react('pop'); pow(['COPIED!', 'YOINK!', 'GOT IT!'][Math.random() * 3 | 0], from); }
   clearTimeout(clipTimer);

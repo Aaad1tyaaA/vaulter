@@ -4,7 +4,7 @@ const { app, BrowserWindow, ipcMain, dialog, shell, session, Menu, powerMonitor,
 const { pathToFileURL } = require('url')
 const fs = require('fs')
 const path = require('path')
-const { copySecret, clearIfOurs, clearOnQuit } = require('./clipboard.cjs')
+const { copySecret, clearIfOurs, clearOnQuit, warmUp } = require('./clipboard.cjs')
 
 const DEV = !app.isPackaged
 
@@ -44,7 +44,7 @@ const onSync = (ch, fn) => ipcMain.on(ch, (e, ...a) => {
 const onAsync = (ch, fn) => ipcMain.handle(ch, (e, ...a) => { if (!trusted(e)) throw new Error('forbidden'); return fn(...a) })
 
 onSync('kv:read', () => fs.existsSync(VAULT) ? fs.readFileSync(VAULT, 'utf8') : null)
-onSync('kv:write', text => {
+onAsync('kv:write', text => {
   if (typeof text !== 'string' || text.length > 50e6) throw new Error('bad vault payload')
   const v = JSON.parse(text)
   if (v?.app !== 'keyvault' || v?.v !== 2) throw new Error('not a vault')
@@ -115,7 +115,7 @@ function createWindow() {
     },
   })
   win.setContentProtection(true) // keys can't be captured by screenshots, recorders or Recall
-  win.once('ready-to-show', () => win.show())
+  win.once('ready-to-show', () => { win.show(); setTimeout(warmUp, 1500) }) // start the clipboard helper before the first copy
   win.on('closed', () => { win = null })
   win.on('minimize', () => win.webContents.send('kv:minimize'))
   if (DEV && process.env.KV_LOG) { // dev diagnostics: page console + a snapshot of what rendered
