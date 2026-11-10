@@ -850,9 +850,9 @@ body.calm *, body.calm *::before, body.calm *::after { animation-duration: .01ms
   </section>
   <section class="set" data-tab="security"><h3>Recovery code</h3><p>Resets your master password if you forget it. Making a new one voids the old one.</p><div class="opts"><button class="btn sm" id="btnNewCode">Generate new recovery code</button></div></section>
   <section class="set" data-tab="backups" id="autoBackup" hidden><h3>Automatic backups</h3>
-    <p>Every change saves an encrypted copy here (one per day, last 30 kept). Point it at a OneDrive, Google Drive or USB folder so your keys survive this PC dying. Copies open with your master password or recovery code.</p>
+    <p>Every change saves an encrypted copy here: one per day (last 30 days), plus the vault as it was before your recent changes (last 12, in <span class="mono">Recent</span>), so a deleted key can be brought back. Point it at a OneDrive, Google Drive or USB folder so your keys survive this PC dying. Copies open with your master password or recovery code.</p>
     <p class="mono" id="abDir" style="word-break:break-all;color:var(--ink)"></p><p id="abInfo"></p>
-    <div class="opts"><button class="btn sm" id="abChange">Change folder</button><button class="btn sm" id="abOpen">Open folder</button><button class="btn sm" id="abNow">Back up now</button></div>
+    <div class="opts"><button class="btn sm" id="abChange">Change folder</button><button class="btn sm" id="abOpen">Open folder</button><button class="btn sm" id="abNow">Back up now</button><button class="btn sm" id="abUndo">Bring back deleted keys</button></div>
   </section>
   <section class="set" data-tab="backups"><h3>Backup &amp; import</h3><p id="lastBackup"></p>
     <div class="opts">

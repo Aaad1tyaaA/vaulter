@@ -862,7 +862,7 @@ $('#pwForm').onsubmit = async e => {
   V.weakPw = false; render();
   await showCode(code, 'Password changed', 'Everything was re-encrypted with a new key, so your old recovery code no longer works. Save this new one.');
   if (fsv) {
-    const older = fsv.backupInfo().count - 1;
+    const bi = fsv.backupInfo(), older = bi.count - 1 + bi.recent;
     if (older > 0 && await ask({ title: 'Delete old backups?', text: `${older} older automatic backup${older > 1 ? 's' : ''} can still be opened with your OLD password or recovery code. Today's backup already uses the new key and is kept. Backups you exported yourself aren't touched.`, ok: 'Delete old backups', danger: true }))
       toast(`Deleted ${fsv.purgeBackups()} old backup${older > 1 ? 's' : ''}`, 'ok');
   }
@@ -887,15 +887,17 @@ $('#btnNewCode').onclick = async () => {
 async function exportBackup() {
   await writing;
   const v = readVault(); if (!v) return toast('Nothing saved yet.', 'bad');
-  download(JSON.stringify(v, null, 2), `vaulter-backup-${new Date().toISOString().slice(0, 10)}.json`, 'application/json');
+  download(JSON.stringify(v, null, 2), `vaulter-backup-${new Date().toLocaleDateString('sv')}.json`, 'application/json');
   data.settings.lastBackup = Date.now(); persist(); render();
   toast('Encrypted backup downloaded', 'ok', 'happy');
   if ($('#settings').open) openSettings();
 }
 $('#btnExport').onclick = exportBackup;
-$('#btnImport').onclick = async () => {
-  const file = await pickFile('.json,application/json'); if (!file) return;
-  let v; try { v = JSON.parse(await file.text()); checkFmt(v); } catch { return toast('Not a Vaulter backup file.', 'bad', 'sad'); }
+async function importBackup() { // merge: adds keys and folders you don't have, never removes any
+  let text;
+  if (fsv) { const r = await fsv.pickBackupFile().catch(() => null); if (!r) return; text = r.text; }
+  else { const file = await pickFile('.json,application/json'); if (!file) return; text = await file.text(); }
+  let v; try { v = JSON.parse(text); checkFmt(v); } catch { return toast('Not a Vaulter backup file.', 'bad', 'sad'); }
   const secret = await ask({ title: 'Unlock backup', text: 'Password or recovery code for that backup.', ok: 'Merge keys', input: 'text', type: 'password' });
   if (!secret) return;
   let d;
@@ -910,7 +912,8 @@ $('#btnImport').onclick = async () => {
   }
   await persist(); render();
   toast(`Merged: ${added} new, ${updated} updated`, 'ok', 'happy');
-};
+}
+$('#btnImport').onclick = importBackup;
 $('#btnImportEnv').onclick = async () => {
   const text = await ask({ title: 'Import .env', text: 'Paste KEY=value lines. Providers are detected automatically.', ok: 'Import', input: 'area', placeholder: 'OPENAI_API_KEY=sk-…\nELEVENLABS_API_KEY=sk_…' });
   if (!text) return;
@@ -987,10 +990,16 @@ if (fsv) {
   const show = () => {
     const i = fsv.backupInfo();
     $('#abDir').textContent = i.dir;
-    $('#abInfo').textContent = i.count ? `${i.count} backup${i.count > 1 ? 's' : ''} · newest ${new Date(i.latest).toLocaleString()}` : 'No automatic backups yet.';
+    $('#abInfo').textContent = i.count
+      ? `${i.count} daily backup${i.count > 1 ? 's' : ''} · ${i.recent} recent · newest ${new Date(i.latest).toLocaleString()} · this vault's files start with vaulter-${i.id}`
+      : 'No automatic backups yet.';
   };
   $('#abChange').onclick = async () => { if (await fsv.chooseBackupDir()) { show(); toast('Backup folder changed', 'ok'); } };
   $('#abOpen').onclick = () => fsv.openBackupDir();
+  $('#abUndo').onclick = async () => {
+    if (!await ask({ title: 'Bring back deleted keys', text: 'Pick a backup from before the change (newest first in the Recent folder). Keys and folders it has that this vault is missing are added back. Nothing is removed.', ok: 'Choose backup' })) return;
+    importBackup();
+  };
   $('#abNow').onclick = async () => { await writing; fsv.backupNow(); data.settings.lastBackup = Date.now(); persist(); show(); toast('Encrypted backup saved', 'ok', 'happy'); };
   $('#btnSettings').addEventListener('click', show);
 }

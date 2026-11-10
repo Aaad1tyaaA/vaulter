@@ -23,12 +23,13 @@ and never sends a key over the network.
 - **Search, tags, pins, grid / list view**, rotation reminders, copy as `.env`, import from `.env`.
 - **Copies stay private**: copied keys are kept out of Windows clipboard history (Win+V) and cloud clipboard,
   and the clipboard is cleared after 30s.
-- **Automatic encrypted backups** every day, to any folder you pick (OneDrive, Google Drive, USB…).
+- **Automatic encrypted backups** every day, plus the last 12 versions before your recent changes, so a deleted
+  key can be brought back. Saved to any folder you pick (OneDrive, Google Drive, USB…).
 - Light / dark mode, a pre-rendered glass orb that runs smoothly on any laptop.
 
 ## Install
 
-**Needs:** Windows 10 or 11, 64-bit. About 500 MB of disk space. No account, no internet needed after install.
+**Needs:** Windows 10 or 11, 64-bit. About 300 MB of disk space. No account, no internet needed after install.
 
 ### 1. Download
 
@@ -102,7 +103,8 @@ reinstalling picks up where you left off. Delete those two folders too if you wa
 | What | Where | Survives uninstall? |
 |---|---|---|
 | The vault (encrypted) | `%APPDATA%\Vaulter\vault.json` | Yes: the uninstaller leaves it |
-| Automatic backups (encrypted, one per day, last 30) | `Documents\Vaulter Backups` (change it in Settings) | Yes |
+| Automatic backups (encrypted, one per day, last 30) | `Documents\Vaulter Backups\vaulter-<vault id>-<date>.json` (change the folder in Settings) | Yes |
+| Versions from before recent changes (last 12) | `Documents\Vaulter Backups\Recent` | Yes |
 | Exported backups | wherever you save them | Yes |
 
 Every file is encrypted. It opens only with your master password or your recovery code.
@@ -113,6 +115,14 @@ Every file is encrypted. It opens only with your master password or your recover
   Google Drive / Dropbox folder. Every change is then backed up off your machine, still encrypted.
 - **Manual:** Settings → **Backups** → **Export encrypted backup** → save the `.json` to a USB stick or cloud drive.
 - **Recovery code:** keep it on paper or in a password manager, not only on this PC.
+
+Each vault has its own id (shown in Settings → Backups), so two vaults sharing a backup folder never
+overwrite each other.
+
+### Bringing back a deleted key
+
+Settings → **Backups** → **Bring back deleted keys** → pick a file from the `Recent` folder dated before the
+change. Keys and folders it has that your vault is missing are added back; nothing is removed.
 
 ### Restoring (new PC, reinstall, or after deleting the app)
 

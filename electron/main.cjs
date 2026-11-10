@@ -27,30 +27,9 @@ const readJson = (f, d) => { try { return JSON.parse(fs.readFileSync(f, 'utf8'))
 const config = () => ({ backupDir: path.join(app.getPath('documents'), 'Vaulter Backups'), ...readJson(CONFIG, {}) })
 const writeAtomic = (f, text) => { fs.mkdirSync(path.dirname(f), { recursive: true }); fs.writeFileSync(f + '.tmp', text); fs.renameSync(f + '.tmp', f) }
 
-/* ---------------- backups ---------------- */
-const BACKUP_RE = /^vaulter-\d{4}-\d{2}-\d{2}\.json$/
-const today = () => `vaulter-${new Date().toISOString().slice(0, 10)}.json`
-function backups() {
-  const dir = config().backupDir
-  try { return { dir, files: fs.readdirSync(dir).filter(f => BACKUP_RE.test(f)).sort() } }
-  catch { return { dir, files: [] } }
-}
-// One encrypted copy per day (overwritten through the day), oldest pruned past KEEP.
-function backup() {
-  if (!fs.existsSync(VAULT)) return
-  const { dir } = backups()
-  fs.mkdirSync(dir, { recursive: true })
-  fs.copyFileSync(VAULT, path.join(dir, today()))
-  const { files } = backups()
-  files.slice(0, Math.max(0, files.length - KEEP)).forEach(f => fs.rmSync(path.join(dir, f)))
-}
-// Delete backups (all, or all but today's, which is re-encrypted with the current key on every save).
-function purgeBackups(keepToday) {
-  const { dir, files } = backups()
-  const gone = files.filter(f => !(keepToday && f === today()))
-  gone.forEach(f => fs.rmSync(path.join(dir, f), { force: true }))
-  return gone.length
-}
+/* ---------------- backups (see backups.cjs) ---------------- */
+const { snapshot, backup, backups, purgeBackups, newestBackup, vaultId, list, DAY_RE } =
+  require('./backups.cjs')({ VAULT, CONFIG, KEEP, dir: () => config().backupDir, readJson, writeAtomic })
 
 /* ---------------- IPC (only from our own window) ---------------- */
 function trusted(e) {
@@ -69,15 +48,16 @@ onSync('kv:write', text => {
   if (typeof text !== 'string' || text.length > 50e6) throw new Error('bad vault payload')
   const v = JSON.parse(text)
   if (v?.app !== 'keyvault' || v?.v !== 2) throw new Error('not a vault')
-  writeAtomic(VAULT, text); backup(); return true
+  if (!fs.existsSync(VAULT)) vaultId(true) // a new or restored vault starts its own backup series
+  snapshot(); writeAtomic(VAULT, text); backup(); return true
 })
 onSync('kv:wipe', opts => { fs.rmSync(VAULT, { force: true }); return opts?.backups ? purgeBackups(false) : 0 })
 onSync('kv:purgeBackups', () => purgeBackups(true))
 onSync('kv:backupNow', () => { backup(); return true })
 onSync('kv:backupInfo', () => {
-  const { dir, files } = backups()
+  const { dir, id, files, recent } = backups()
   const latest = files.length ? fs.statSync(path.join(dir, files[files.length - 1])).mtimeMs : null
-  return { dir, count: files.length, latest }
+  return { dir, id, count: files.length, recent: recent.length, latest }
 })
 onSync('kv:openBackupDir', () => { fs.mkdirSync(config().backupDir, { recursive: true }); shell.openPath(config().backupDir); return true })
 onAsync('kv:chooseBackupDir', async () => {
@@ -89,18 +69,17 @@ onAsync('kv:chooseBackupDir', async () => {
 })
 // Fresh install / deleted vault: offer the newest automatic backup for one-click restore.
 onSync('kv:latestBackup', () => {
-  const { dir, files } = backups()
-  const name = files[files.length - 1]
-  if (!name) return null
-  const file = path.join(dir, name)
-  return { name, dir, count: files.length, mtime: fs.statSync(file).mtimeMs, text: fs.readFileSync(file, 'utf8') }
+  const dir = config().backupDir, n = newestBackup()
+  if (!n) return null
+  const file = path.join(dir, n.f)
+  return { name: n.f, dir, count: list(dir).filter(f => DAY_RE.test(f)).length, mtime: n.t, text: fs.readFileSync(file, 'utf8') }
 })
 // Native picker that opens straight in the backup folder (a web file input can't choose its start folder).
 onAsync('kv:pickBackupFile', async () => {
   const dir = config().backupDir
   const r = await dialog.showOpenDialog(win, {
     title: 'Choose a Vaulter backup', defaultPath: fs.existsSync(dir) ? dir : app.getPath('documents'),
-    properties: ['openFile'], filters: [{ name: 'Vaulter backup', extensions: ['json'] }],
+    properties: ['openFile', 'dontAddToRecent'], filters: [{ name: 'Vaulter backup', extensions: ['json'] }],
   })
   if (r.canceled || !r.filePaths[0]) return null
   const f = r.filePaths[0]
